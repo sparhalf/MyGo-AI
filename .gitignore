@@ -46,3 +46,6 @@ Thumbs.db
 # Large/binary artifacts (avoid pushing)
 *.mp4
 *.pdf
+
+# Allow demo video for README preview
+!Demo.mp4
