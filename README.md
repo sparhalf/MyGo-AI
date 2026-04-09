@@ -12,7 +12,9 @@
 
 ## Demo
 
-- **演示视频**：[`Demo.mp4`](Demo.mp4)
+- 点击下图观看演示视频：[`Demo.mp4`](Demo.mp4)
+
+[![Demo](docs/demo_cover.png)](Demo.mp4)
 
 ---
 
