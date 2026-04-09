@@ -12,9 +12,9 @@
 
 ## Demo
 
-- 点击下图观看演示视频（GitHub 附件播放器）：[`Demo`](https://github.com/user-attachments/assets/c1ddf83f-0032-4c7b-ab94-fdff9f49a86d)
+- 点击下图观看演示视频（GitHub 附件播放器）：[`Demo`](https://github.com/user-attachments/assets/30a0eafc-3c31-41db-9616-9126bd04fcd3)
 
-[![Demo](docs/demo_cover.png)](https://github.com/user-attachments/assets/c1ddf83f-0032-4c7b-ab94-fdff9f49a86d)
+[![Demo](docs/demo_cover.png)](https://github.com/user-attachments/assets/30a0eafc-3c31-41db-9616-9126bd04fcd3)
 
 ---
 
