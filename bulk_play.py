@@ -10,13 +10,13 @@ from __future__ import annotations
 
 import argparse
 import datetime
-from typing import Callable, Optional
+from typing import Callable, Optional, Any, Dict
 
 from dlgo import Player
 from play import play_game
 
 
-def _make_agent_factory(kind: str, args) -> Callable[[], object]:
+def _make_agent_factory(kind: str, args, side: str) -> Callable[[], object]:
     kind = kind.lower()
     if kind == "random":
         from agents.random_agent import RandomAgent
@@ -26,10 +26,29 @@ def _make_agent_factory(kind: str, args) -> Callable[[], object]:
         from agents.mcts_agent import MCTSAgent
 
         use_enhancements = kind == "mcts_enh"
+        rounds = args.mcts_rounds
+        tlim = args.mcts_time
+        depth = args.rollout_depth
+
+        if side == "black":
+            if args.black_mcts_rounds is not None:
+                rounds = args.black_mcts_rounds
+            if args.black_mcts_time is not None:
+                tlim = args.black_mcts_time
+            if args.black_rollout_depth is not None:
+                depth = args.black_rollout_depth
+        else:
+            if args.white_mcts_rounds is not None:
+                rounds = args.white_mcts_rounds
+            if args.white_mcts_time is not None:
+                tlim = args.white_mcts_time
+            if args.white_rollout_depth is not None:
+                depth = args.white_rollout_depth
+
         return lambda: MCTSAgent(
-            num_rounds=args.mcts_rounds,
-            time_limit_s=args.mcts_time,
-            rollout_depth=args.rollout_depth,
+            num_rounds=rounds,
+            time_limit_s=tlim,
+            rollout_depth=depth,
             use_enhancements=use_enhancements,
         )
     if kind == "minimax":
@@ -70,6 +89,12 @@ def main():
     parser.add_argument("--mcts_rounds", type=int, default=1000, help="MCTS 每步模拟轮数上限")
     parser.add_argument("--mcts_time", type=float, default=10.0, help="MCTS 每步时间上限（秒）")
     parser.add_argument("--rollout_depth", type=int, default=30, help="增强版 rollout 深度上限")
+    parser.add_argument("--black_mcts_rounds", type=int, default=None, help="黑方 MCTS rounds（覆盖全局）")
+    parser.add_argument("--white_mcts_rounds", type=int, default=None, help="白方 MCTS rounds（覆盖全局）")
+    parser.add_argument("--black_mcts_time", type=float, default=None, help="黑方 MCTS time（覆盖全局）")
+    parser.add_argument("--white_mcts_time", type=float, default=None, help="白方 MCTS time（覆盖全局）")
+    parser.add_argument("--black_rollout_depth", type=int, default=None, help="黑方 rollout_depth（覆盖全局）")
+    parser.add_argument("--white_rollout_depth", type=int, default=None, help="白方 rollout_depth（覆盖全局）")
     # 兼容旧参数：以前用 --enhanced 切换 mcts 行为；现在用 mcts_std/mcts_enh 区分双方
     parser.add_argument(
         "--enhanced",
@@ -91,8 +116,8 @@ def main():
     )
     args = parser.parse_args()
 
-    black_factory = _make_agent_factory(args.black, args)
-    white_factory = _make_agent_factory(args.white, args)
+    black_factory = _make_agent_factory(args.black, args, side="black")
+    white_factory = _make_agent_factory(args.white, args, side="white")
 
     results = {Player.black: 0, Player.white: 0, None: 0}
     total_moves = 0
@@ -108,6 +133,8 @@ def main():
         log_fp.write(
             f"black={args.black} white={args.white} | "
             f"mcts_rounds={args.mcts_rounds} mcts_time={args.mcts_time} rollout_depth={args.rollout_depth} | "
+            f"black_mcts_rounds={args.black_mcts_rounds} black_mcts_time={args.black_mcts_time} black_rollout_depth={args.black_rollout_depth} | "
+            f"white_mcts_rounds={args.white_mcts_rounds} white_mcts_time={args.white_mcts_time} white_rollout_depth={args.white_rollout_depth} | "
             f"minimax_depth={args.minimax_depth}\n"
         )
         log_fp.write("\n")
